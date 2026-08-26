@@ -1,0 +1,14 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.aicomp/
+evaluation_artifacts/
+.pytest_cache/
+
+# Vendored reference copies of the competition SDK (pip-installable, not our code)
+vendor/
+
+# Raw competition data downloads
+*.zip
