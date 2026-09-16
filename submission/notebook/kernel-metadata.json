@@ -1,0 +1,16 @@
+{
+  "id": "ayushsingh7863/jed-redteam-baseline",
+  "title": "jed-redteam baseline",
+  "code_file": "attack-submission.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "competition_sources": [
+    "ai-agent-security-multi-step-tool-attacks"
+  ],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
