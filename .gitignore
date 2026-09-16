@@ -12,3 +12,7 @@ vendor/
 
 # Raw competition data downloads
 *.zip
+
+.env
+.env.*
+!*.env.example
