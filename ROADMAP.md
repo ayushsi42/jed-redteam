@@ -1,4 +1,4 @@
-# Roadmap — jed-redteam
+# Roadmap — JED Red-Team
 
 ## Current State
 - The submission pipeline works end-to-end and is competition-validated: `src/jed_redteam/attack.py` → `scripts/build_submission.py` → `submission/attack.py` passes `aicomp validate`, runs under `aicomp test`/`aicomp evaluate`, and has been pushed as a real Kaggle notebook (`submission/notebook/`, `scripts/build_notebook.py`).

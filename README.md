@@ -1,9 +1,9 @@
-# jed-redteam
+# JED Red-Team
 *A search algorithm for breaking guardrailed LLM tool-agents — Kaggle's JED red-team competition*
 
-![Python](https://img.shields.io/badge/python-3.11%2B-blue)
-![Competition](https://img.shields.io/badge/competition-Kaggle-20BEFF)
-![Status](https://img.shields.io/badge/status-baseline-yellow)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue)](#requirements)
+[![Competition](https://img.shields.io/badge/competition-Kaggle-20BEFF)](https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks)
+[![Status](https://img.shields.io/badge/status-baseline-yellow)](#current-status)
 
 ## Overview
 This repo is an entry for the Kaggle competition [AI Agent Security — Multi-Step Tool Attacks](https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks) (SDK codename **JED**: Replay-Based Security Benchmark for Tool-Using AI Agents). The task is to write a search algorithm (`AttackAlgorithm.run()`) that explores a tool-using agent's action space and returns multi-step tool-call chains (`AttackCandidate`s) that break a guardrailed agent's security — exfiltration, destructive writes, confused deputy, and untrusted-to-action breaches. Candidates are replayed independently against two target agents (GPT-OSS, Gemma), each behind a public and a private guardrail. What makes the scoring interesting is that it deduplicates by `cell_signature` — a hash over tool-call sequence, args, and outcomes — so an algorithm that finds 50 variations of the same exploit scores worse than one that finds 10 genuinely distinct exploit classes. Raw breach count is not the target; unique exploit *shape* is.
