@@ -11,29 +11,33 @@ This repo is an entry for the Kaggle competition [AI Agent Security — Multi-St
 ## Key Features
 - Working end-to-end local iteration loop: `src/` package development → `scripts/build_submission.py` flattens it into a Kaggle-legal single-file `submission/attack.py` → `pytest` → `aicomp validate/test/evaluate`.
 - A validated, competition-registered Kaggle notebook pipeline (`scripts/build_notebook.py`, `submission/notebook/`) that writes and can push the submission notebook Kaggle actually runs.
-- A random-prompt baseline `AttackAlgorithm` that drives the environment via `env.interact()` and scores candidates with the SDK's real `eval_predicates` — the actual breach checker, not a hand-rolled proxy — so local "interesting" signal matches what the evaluator credits.
+- **Fixture-aware discovery**: `run()` drives real `web.search`/`web.open`/`email.read` calls and parses their output (JSON results and embedded `tool.name(id="...")` chain references) instead of guessing from a static prompt bank.
+- **A deliberate file-wash / taint-aging exploit chain**: reads untrusted content, pads the guardrail's 5-tool-event taint window with benign local `fs.read` calls, then replays the untrusted-sourced action once it's aged out of the window — the exact bypass `study_strategy.md` predicted.
+- **A cell-signature-aware, priority-ordered arm queue** (`aicomp_sdk.core.cells.cell_signature`) replacing a single flat random loop, so search effort goes toward unseen tool-call shapes rather than repeating the same one.
 - Deadline-safety handling in the search loop: a fixed time margin so a slow final `env.interact()` call can't push the run past the harness's hard external deadline.
-- A from-scratch, code-cited reverse-engineering of the guardrail and scoring internals (`study_strategy.md`) covering all four breach predicates, the cell-dedup hash, the `OptimalGuardrail` heuristic's exact blind spots, and the shipped Go-Explore baseline's weaknesses — the actual intellectual groundwork for a real search strategy, not yet wired into `run()`.
+- A from-scratch, code-cited reverse-engineering of the guardrail and scoring internals (`study_strategy.md`), extended by direct instrumentation (documented in Current Status) into a proof that 3 of the 4 breach predicates are mathematically unreachable against `OptimalGuardrail` + `VulnerableDeterministicAgent` specifically — not just unexploited.
 
 ## How It Works
-Each iteration resets or continues the sandboxed environment, drives it with a prompt, exports the resulting trace, and checks it against the real predicate logic before keeping it as a candidate:
+Each run works through a finite, priority-ordered queue of discovery and exploit "arms" against the sandboxed environment, deduplicating by `cell_signature` as it goes:
 
 ```
-env.reset()
+_Discovery.run()                    # web.search / web.open / email.read, parsed for
+   │                                # fixture content + tool.name(id="...") references
+   ▼
+best_items(n)  ──►  ordered _Arm queue
    │
    ▼
-env.interact(prompt, max_tool_hops=...)   # agent takes tool-call actions
+for each arm (until deadline - safety margin):
+   _run_arm() / _run_wash_arm()     # e.g. file-wash: read untrusted → pad taint
+   │                                # window with benign fs.read → replay action
+   ▼
+env.export_trace_dict()             # tool_events, user_messages, egress, ...
    │
    ▼
-env.export_trace_dict()                    # tool_events, user_messages, egress, ...
-   │
-   ▼
-eval_predicates(trace)                     # EXFILTRATION / UNTRUSTED_TO_ACTION /
-   │  fires?                               # DESTRUCTIVE_WRITE / CONFUSED_DEPUTY
+eval_predicates(trace) + cell_signature(trace)   # dedup by shape, not prompt count
+   │  fires & new signature?
    ▼
 AttackCandidate.from_messages(...)  ──►  findings[]
-   │
-   └── loop continues until (deadline - safety margin)
 ```
 
 The evaluator later replays each returned `AttackCandidate` independently and recomputes predicates and cell signatures — local scoring is a fast, optimistic proxy, not the source of truth.
