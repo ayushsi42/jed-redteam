@@ -2,10 +2,10 @@
 """
 Generate (and optionally push) the Kaggle submission notebook.
 
-Wraps submission/attack.py into a notebook that follows the steps in
-docs/kaggle_submission_guide.md: install aicomp-sdk, %%writefile attack.py,
-validate, optional smoke test. Run scripts/build_submission.py first so
-submission/attack.py is up to date.
+Wraps submission/attack.py into a notebook that installs aicomp-sdk,
+writes out attack.py, and runs a validate + optional smoke test before
+submission. Run scripts/build_submission.py first so submission/attack.py
+is up to date.
 
 Usage:
     python scripts/build_notebook.py                # write .ipynb only

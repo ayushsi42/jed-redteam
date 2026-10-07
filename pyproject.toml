@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "jed-redteam"
 version = "0.1.0"
-description = "Attack-search development package for the Kaggle AI Agent Security (JED) red-team competition"
+description = "Adversarial search algorithm for finding security failures in guardrailed, tool-using LLM agents"
 requires-python = ">=3.11"
 dependencies = [
     "aicomp-sdk==3.1.2",

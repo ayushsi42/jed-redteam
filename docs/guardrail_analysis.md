@@ -1,8 +1,9 @@
-# Winning Strategy — AI Agent Security: Multi-Step Tool Attacks
+# Guardrail & Scoring Analysis
 
-This is the intuitive, code-grounded companion to `study.md`. Every claim below
-is read directly out of `vendor/aicomp_sdk/` in this repo, cited by file:line.
-No speculation about the SDK's behavior — only what the code actually does.
+A code-grounded reverse-engineering of the evaluation SDK's guardrail and
+scoring internals. Every claim below is read directly out of
+`vendor/aicomp_sdk/` in this repo, cited by file:line. No speculation about
+the SDK's behavior — only what the code actually does.
 
 ---
 
@@ -53,7 +54,7 @@ This is the richest predicate and the one with the most exploitable subtlety in 
 *implementation*, distinct from its intent:
 - Untrusted sources = `{"web", "email"}` only (line 228). **Local file content is
   NOT an untrusted source for this predicate** even though the top-level docstring/
-  study.md implies "file" is untrusted too. `fs.read` tags `source="file"`
+  this analysis implies "file" is untrusted too. `fs.read` tags `source="file"`
   (fs.py:17), which is excluded from `untrusted_sources`. This means routing
   injected content *through* a file write/read hop before acting on it evades this
   predicate's source check entirely — file-laundering an injected instruction is a
@@ -387,7 +388,7 @@ def decide(self, tool_name, tool_args, context):
    novel cell, or cap archive size with LRU/score-based eviction), you can sustain
    a longer, wider search within the same 8750s real budget.
 6. **Copying this baseline verbatim caps your score at parity with everyone else
-   who also copied it** — the study.md point stands, now with code-level backing:
+   who also copied it** — the this analysis point stands, now with code-level backing:
    the true differentiators are (a) fixture-aware targeting instead of blind
    generic prompts, (b) deliberately engineering the file-wash/taint-bypass shape
    rather than hoping to stumble into it, and (c) a smarter per-cell/per-prompt
@@ -420,7 +421,7 @@ def decide(self, tool_name, tool_args, context):
   plausible authority/urgency framing, embedded concrete tool-call syntax as seen
   in the fixture templates) rather than relying on `deterministic`'s specific
   keyword-trigger list. If the SDK's local setup can load these (check `aicomp test
-  redteam --help` for `--agent` choices, per study.md §5), validate late-stage
+  redteam --help` for `--agent` choices, per this analysis §5), validate late-stage
   candidates against at least one of these before final submission — don't tune
   exclusively against `deterministic`.
 
